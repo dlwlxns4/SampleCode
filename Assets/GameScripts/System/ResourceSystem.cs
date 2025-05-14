@@ -12,13 +12,14 @@ using UnityEngine.ResourceManagement.ResourceProviders;
 public enum eResourceType
 {
     UI,
+    Map,
     None,
 }
 
 public class ManageHandle
 {
     //장소 전환 시 AutoRelease
-    public bool AutoReelase = true;
+    public bool AutoRelease = true;
     public AsyncOperationHandle operationHandle ;
 
     public ManageHandle(bool autoRelase, AsyncOperationHandle handle)
@@ -51,9 +52,37 @@ public class ResourceSystem : ISystem
             _isInit = false;
         }
 
-        return await base.Initialize();
+        return _isInit;
     }
 
+    public override void Release()
+    {
+        _resourceLocations.Clear();
+        foreach (var manageHandle in _loadedAssets)
+        {
+            if(manageHandle.Value == null)
+                continue;
+            
+            Addressables.Release(manageHandle.Value.operationHandle);
+        }
+        _loadedAssets.Clear();
+    }
+
+    //장소 변경 시 호출
+    public void ReleaseAutoHandle()
+    {
+        foreach (var manageHandle in _loadedAssets)
+        {
+            if(manageHandle.Value == null)
+                continue;
+            
+            if(manageHandle.Value.AutoRelease == false)
+                continue;
+            
+            Addressables.Release(manageHandle.Value.operationHandle);
+        }
+    }
+    
     private async UniTask LoadLocation()
     {
         try
@@ -168,7 +197,7 @@ public class ResourceSystem : ISystem
         }
         else
         {
-            throw new Exception($"Scene Resource not found: Type={type}, Location={location}");
+            return default;
         }    
     }
     

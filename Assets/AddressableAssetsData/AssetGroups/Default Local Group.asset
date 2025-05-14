@@ -14,19 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GroupName: Default Local Group
   m_GUID: 07e817a40bf7b49458e19fbc2a7afc2a
-  m_SerializeEntries:
-  - m_GUID: 376412705ff60214f96a3c21dc63ec6a
-    m_Address: Assets/GameDatas/UI/UITest.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - UI
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d56b3d18910360e42a50721456907241
-    m_Address: Assets/GameDatas/UI/UISample.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - UI
-    FlaggedDuringContentUpdateRestriction: 0
+  m_SerializeEntries: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 43d75b9735657b84c9a46a279af039b1, type: 2}
   m_SchemaSet:

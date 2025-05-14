@@ -32,9 +32,11 @@ public class Framework : Singleton<Framework>
 {
     public UISystem UI => _uiSystem;
     public ResourceSystem Resource => _resourceSystem;
+    public MapSystem Map => _mapSystem;
     
     private UISystem _uiSystem;
     private ResourceSystem _resourceSystem;
+    private MapSystem _mapSystem;
     
     private List<ISystem> _systems = new List<ISystem>();
     
@@ -42,10 +44,11 @@ public class Framework : Singleton<Framework>
     {
         _resourceSystem = this.AddComponent<ResourceSystem>();
         _uiSystem = this.AddComponent<UISystem>();
+        _mapSystem = this.AddComponent<MapSystem>();
         
         _systems.Add(_resourceSystem);
         _systems.Add(_uiSystem);
-
+        _systems.Add(_mapSystem);
         
         foreach (var system in _systems)
         {
@@ -57,7 +60,7 @@ public class Framework : Singleton<Framework>
         }
     }
     
-    public void Release()
+    public void ReleaseAll()
     {
         foreach (var system in _systems)
         {
@@ -67,6 +70,6 @@ public class Framework : Singleton<Framework>
 
     private void OnDestroy()
     {
-        Release();
+        ReleaseAll();
     }
 }

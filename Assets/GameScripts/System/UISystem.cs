@@ -23,13 +23,7 @@ public class UISystem : ISystem
 
         _isInit = true;
         
-        var uiUnit = await LoadUI(eUIType.Sample, false);
-        if (uiUnit == null)
-        {
-            _isInit = false;
-        }
-            
-        return await base.Initialize();
+        return _isInit;
     }
 
     public async UniTask<UIUnit> LoadUI(eUIType uiType, bool isAutoRelease = true)
