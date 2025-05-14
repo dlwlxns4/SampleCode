@@ -1,6 +1,7 @@
 /// 2025-05-14
 
 using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -13,6 +14,8 @@ public enum eUIType
 public class UISystem : ISystem
 {
     private GameObject _uiRoot;
+
+    private List<UIUnit> _uiList = new List<UIUnit>();
     
     public override async UniTask<bool> Initialize()
     {
@@ -20,7 +23,7 @@ public class UISystem : ISystem
 
         _isInit = true;
         
-        var uiUnit = await LoadUI(eUIType.Sample);
+        var uiUnit = await LoadUI(eUIType.Sample, false);
         if (uiUnit == null)
         {
             _isInit = false;
@@ -31,12 +34,13 @@ public class UISystem : ISystem
 
     public async UniTask<UIUnit> LoadUI(eUIType uiType, bool isAutoRelease = true)
     {
-        var uiObject = await Framework.I.Resource.InstantiateResourceAsync(eResourceType.UI, uiType.ToString(), _uiRoot.transform);
+        var uiObject = await Framework.I.Resource.InstantiateResourceAsync(eResourceType.UI, uiType.ToString(), _uiRoot.transform, isAutoRelease);
         
         var uiUnit = uiObject.GetComponent<UIUnit>();
         if (uiUnit != null)
         {
             await uiUnit.Initialize();
+            _uiList.Add(uiUnit);
         }
         else
         {

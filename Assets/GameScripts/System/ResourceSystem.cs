@@ -17,20 +17,25 @@ public enum eResourceType
 
 public class ManageHandle
 {
+    //장소 전환 시 AutoRelease
     public bool AutoReelase = true;
     public AsyncOperationHandle operationHandle ;
 
-    public ManageHandle(bool autoReelase, AsyncOperationHandle handle)
+    public ManageHandle(bool autoRelase, AsyncOperationHandle handle)
     {
         operationHandle = handle;
+    }
+
+    public void Release()
+    {
+        Addressables.Release(operationHandle);
     }
 }
 
 public class ResourceSystem : ISystem
 {
     private Dictionary<eResourceType, Dictionary<string, IResourceLocation>> _resourceLocations = new Dictionary<eResourceType, Dictionary<string, IResourceLocation>>();
-    
-    private Dictionary<string, AsyncOperationHandle> _loadedAssets = new Dictionary<string, AsyncOperationHandle>();
+    private Dictionary<string, ManageHandle> _loadedAssets = new Dictionary<string, ManageHandle>();
     
     public override async UniTask<bool> Initialize()
     {
@@ -100,7 +105,7 @@ public class ResourceSystem : ISystem
     /// <summary>
     /// Object 타입만 변환 가능. 
     /// </summary>
-    public async UniTask<T> LoadResource<T>(eResourceType type, string location)
+    public async UniTask<T> LoadResource<T>(eResourceType type, string location, bool isAutoRelease = true)
     {
         var loadedResourceResult = IsLoadedHandle(type, location);
         if (loadedResourceResult.Item1)
@@ -116,7 +121,8 @@ public class ResourceSystem : ISystem
             //Loaded Handle Update
             if (_loadedAssets.ContainsKey($"{type.ToString()}/{location}") == false)
             {
-                _loadedAssets.Add($"{type.ToString()}/{location}", resourceHandle);
+                var manageHandle = new ManageHandle(isAutoRelease, resourceHandle);
+                _loadedAssets.Add($"{type.ToString()}/{location}", manageHandle);
             }
             
             if (resourceHandle.IsValid())
@@ -132,7 +138,7 @@ public class ResourceSystem : ISystem
         }    
     }
 
-    public async UniTask<SceneInstance> LoadSceneResource(eResourceType type, string location)
+    public async UniTask<SceneInstance> LoadSceneResource(eResourceType type, string location, bool isAutoRelease = true)
     {
         var loadedResourceResult = IsLoadedHandle(type, location);
         if (loadedResourceResult.Item1)
@@ -149,7 +155,8 @@ public class ResourceSystem : ISystem
             //Loaded Handle Update
             if (_loadedAssets.ContainsKey($"{type.ToString()}/{location}") == false)
             {
-                _loadedAssets.Add($"{type.ToString()}/{location}", resourceHandle);
+                var manageHandle = new ManageHandle(isAutoRelease, resourceHandle);
+                _loadedAssets.Add($"{type.ToString()}/{location}", manageHandle);
             }
             
             if (resourceHandle.IsValid())
@@ -165,13 +172,20 @@ public class ResourceSystem : ISystem
         }    
     }
     
-    public async UniTask<GameObject> InstantiateResourceAsync(eResourceType type, string location, Transform parent = null)
+    public async UniTask<GameObject> InstantiateResourceAsync(eResourceType type, string location, Transform parent = null, bool isAutoRelease = true)
     {
-        var resultObject = await LoadResource<GameObject>(type, location);
+        var resultObject = await LoadResource<GameObject>(type, location, isAutoRelease);
+        
+        if (resultObject == null)
+        {
+            Debug.LogError("ResourceSystem InstantiateResourceAsync is Failed!");            
+            return null;
+        }
+        
         return Instantiate(resultObject, parent);
     }
 
-    public async UniTask LoadHandle(eResourceType type, string location)
+    public async UniTask LoadHandle(eResourceType type, string location, bool isAutoRelease = true)
     {
         var loadedResourceResult = IsLoadedHandle(type, location);
         if (loadedResourceResult.Item1)
@@ -187,7 +201,8 @@ public class ResourceSystem : ISystem
             //Loaded Handle Update
             if (_loadedAssets.ContainsKey($"{type.ToString()}/{location}") == false)
             {
-                _loadedAssets.Add($"{type.ToString()}/{location}", resourceHandle);
+                var manageHandle = new ManageHandle(isAutoRelease, resourceHandle);
+                _loadedAssets.Add($"{type.ToString()}/{location}", manageHandle);
             }
             
             if (resourceHandle.IsValid())
@@ -217,22 +232,22 @@ public class ResourceSystem : ISystem
 
     private (bool, AsyncOperationHandle) IsLoadedHandle(eResourceType type, string location)
     {
-        string handleLocation = $"{type.ToString()}/{location}";
+        string handleLocation = $"{type.ToString()}/{type.ToString()}{location}";
         
-        if (_loadedAssets.TryGetValue(handleLocation, out var loadedHandle))
+        if (_loadedAssets.TryGetValue(handleLocation, out var managedHandle))
         {
-            if (loadedHandle.IsValid() && loadedHandle.Status == AsyncOperationStatus.Succeeded)
+            if (managedHandle.operationHandle.IsValid() && managedHandle.operationHandle.Status == AsyncOperationStatus.Succeeded)
             {
-                return (true, loadedHandle);
+                return (true, managedHandle.operationHandle);
             }
             else
             {
-                return (false, loadedHandle);
+                return (false, managedHandle.operationHandle);
             }
         }
         else
         {
-            return (false, loadedHandle);
+            return (false, default);
         }
     }
     

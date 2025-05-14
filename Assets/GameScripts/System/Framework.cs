@@ -1,5 +1,6 @@
 /// 2025-05-14 
 
+using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
@@ -32,7 +33,6 @@ public class Framework : Singleton<Framework>
     public UISystem UI => _uiSystem;
     public ResourceSystem Resource => _resourceSystem;
     
-    
     private UISystem _uiSystem;
     private ResourceSystem _resourceSystem;
     
@@ -40,11 +40,11 @@ public class Framework : Singleton<Framework>
     
     public override async UniTask Init()
     {
-        _uiSystem = this.AddComponent<UISystem>();
         _resourceSystem = this.AddComponent<ResourceSystem>();
+        _uiSystem = this.AddComponent<UISystem>();
         
-        _systems.Add(_uiSystem);
         _systems.Add(_resourceSystem);
+        _systems.Add(_uiSystem);
 
         
         foreach (var system in _systems)
@@ -64,5 +64,9 @@ public class Framework : Singleton<Framework>
             system.Release();
         }
     }
-    
+
+    private void OnDestroy()
+    {
+        Release();
+    }
 }

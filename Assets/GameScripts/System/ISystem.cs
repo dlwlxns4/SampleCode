@@ -15,7 +15,7 @@ public class ISystem : MonoBehaviour
         return _isInit;
     }
 
-    public void Release()
+    public virtual void Release()
     {
         
     }
