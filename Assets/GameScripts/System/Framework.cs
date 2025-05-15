@@ -36,11 +36,12 @@ public class Framework : Singleton<Framework>
     public UISystem UI => _uiSystem;
     public ResourceSystem Resource => _resourceSystem;
     public MapSystem Map => _mapSystem;
-    
+    public CharacterSystem Character => _characterSystem;
     
     private UISystem _uiSystem;
     private ResourceSystem _resourceSystem;
     private MapSystem _mapSystem;
+    private CharacterSystem _characterSystem;
     
     private List<ISystem> _systems = new List<ISystem>();
     private SystemLanguage _language = SystemLanguage.Korean;
@@ -50,10 +51,12 @@ public class Framework : Singleton<Framework>
         _resourceSystem = this.AddComponent<ResourceSystem>();
         _uiSystem = this.AddComponent<UISystem>();
         _mapSystem = this.AddComponent<MapSystem>();
+        _characterSystem = this.AddComponent<CharacterSystem>();
         
         _systems.Add(_resourceSystem);
         _systems.Add(_uiSystem);
         _systems.Add(_mapSystem);
+        _systems.Add(_characterSystem);
 
         foreach (var system in _systems)
         {

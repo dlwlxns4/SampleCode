@@ -12,9 +12,16 @@ public enum eMapState
 
 public class MapUnit : MonoBehaviour
 {
+    public Camera MapCamera;
+    
     public virtual UniTask Initialize()
     {
         return UniTask.CompletedTask;
+    }
+
+    public virtual void SettingCamera()
+    {
+        
     }
     
     public virtual void Release()

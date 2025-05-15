@@ -61,7 +61,7 @@ public class UISystem : ISystem
             }
         }
         
-        var uiObject = await Framework.I.Resource.InstantiateResourceAsync(eResourceType.UI, uiType.ToString(), _uiRoot.transform);
+        var uiObject = await Framework.I.Resource.InstantiateResourceAsync(eResourceType.UI, uiType.ToString(), isMapDependency, _uiRoot.transform);
         
         var uiUnit = uiObject.GetComponent<UIUnit>();
         if (uiUnit != null)
@@ -133,8 +133,7 @@ public class UISystem : ISystem
 
     private void SetCanvas()
     {
-        _uiRoot = new GameObject();
-        _uiRoot.name = "UIRoot";
+        _uiRoot = new GameObject("UIRoot");
         _uiRoot.SetParent(this);
         
         var canvas = _uiRoot.AddComponent<Canvas>();

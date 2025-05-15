@@ -13,6 +13,7 @@ public enum eResourceType
 {
     UI,
     Map,
+    Character,
     None,
 }
 
@@ -85,7 +86,7 @@ public class ResourceSystem : ISystem
             if (handle.Value.IsMapDependency)
             {
                 handleKeys.Add(handle.Key);
-                Addressables.Release(handle.Value);
+                Addressables.Release(handle.Value.Handle);
             }            
         }
 
@@ -215,9 +216,9 @@ public class ResourceSystem : ISystem
         }    
     }
     
-    public async UniTask<GameObject> InstantiateResourceAsync(eResourceType type, string location, Transform parent = null)
+    public async UniTask<GameObject> InstantiateResourceAsync(eResourceType type, string location, bool isMapDependency, Transform parent = null)
     {
-        var resultObject = await LoadResource<GameObject>(type, location);
+        var resultObject = await LoadResource<GameObject>(type, location, isMapDependency);
         
         if (resultObject == null)
         {
