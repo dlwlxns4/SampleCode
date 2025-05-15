@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using UnityEditor.PackageManager.UI;
 using UnityEngine;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public enum eMapType
 {
@@ -49,7 +50,9 @@ public class MapSystem : ISystem
                 break;
             }
         }
-
+        
+        Framework.I.ReleaseMapDependency();
+        
         await _currentMap.Initialize();
     }
 }

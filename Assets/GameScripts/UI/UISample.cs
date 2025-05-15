@@ -29,7 +29,7 @@ public class UISample : UIUnit
     #region Delegate
     private void LoadTestUI()
     {
-        Framework.I.UI.LoadUI(eUIType.Test).Forget();
+        Framework.I.UI.LoadUI(eUIType.Test, isMapDependency: true).Forget();
     }
 
     private void DeleteTestUI()

@@ -16,10 +16,22 @@ public enum eResourceType
     None,
 }
 
+public class ManageHandle
+{
+    public bool IsMapDependency;
+    public AsyncOperationHandle Handle;
+
+    public ManageHandle(bool isMapDependency, AsyncOperationHandle handle)
+    {
+        IsMapDependency = isMapDependency;
+        Handle = handle;
+    }
+}
+
 public class ResourceSystem : ISystem
 {
     private Dictionary<eResourceType, Dictionary<string, IResourceLocation>> _resourceLocations = new Dictionary<eResourceType, Dictionary<string, IResourceLocation>>();
-    private Dictionary<string, AsyncOperationHandle> _loadedAssets = new Dictionary<string, AsyncOperationHandle>();
+    private Dictionary<string, ManageHandle> _loadedAssets = new Dictionary<string, ManageHandle>();
     
     public override async UniTask<bool> Initialize()
     {
@@ -43,14 +55,48 @@ public class ResourceSystem : ISystem
         _resourceLocations.Clear();
         foreach (var handle in _loadedAssets)
         {
-            if (handle.Value.IsValid() == false)
+            if (handle.Value.Handle.IsValid() == false)
                 continue;
-            
-            Addressables.Release(handle.Value);
+
+            if (handle.Value.Handle.Result is SceneInstance)
+            {
+                var sceneHandle = handle.Value.Handle.Convert<SceneInstance>();
+
+                if (!sceneHandle.IsDone)
+                    sceneHandle.WaitForCompletion();
+
+                var unloadHandle = Addressables.UnloadSceneAsync(sceneHandle);
+                if (!unloadHandle.IsDone)
+                    unloadHandle.WaitForCompletion();
+
+                continue;
+            }
+
+            Addressables.Release(handle.Value.Handle);
         }
         _loadedAssets.Clear();
     }
-    
+
+    public override void ReleaseMapDependency()
+    {
+        List<string> handleKeys = new List<string>();
+        foreach (var handle in _loadedAssets)
+        {
+            if (handle.Value.IsMapDependency)
+            {
+                handleKeys.Add(handle.Key);
+                Addressables.Release(handle.Value);
+            }            
+        }
+
+        foreach (var handleKey in handleKeys)
+        {
+            _loadedAssets.Remove(handleKey);
+        }
+
+        Resources.UnloadUnusedAssets();
+    }
+
     private async UniTask LoadLocation()
     {
         try
@@ -88,10 +134,10 @@ public class ResourceSystem : ISystem
     {
         var key = $"{resourceType.ToString()}/{location}";
 
-        if (_loadedAssets.TryGetValue(key, out var handle))
+        if (_loadedAssets.TryGetValue(key, out var manageHandle))
         {
             _loadedAssets.Remove(key);
-            handle.Release();
+            Addressables.Release(manageHandle.Handle);
         }
         else
         {
@@ -102,7 +148,7 @@ public class ResourceSystem : ISystem
     /// <summary>
     /// Object 타입만 변환 가능. 
     /// </summary>
-    public async UniTask<T> LoadResource<T>(eResourceType type, string location)
+    public async UniTask<T> LoadResource<T>(eResourceType type, string location, bool isMapDependency = false)
     {
         var loadedResourceResult = IsLoadedHandle(type, location);
         if (loadedResourceResult.Item1)
@@ -118,7 +164,8 @@ public class ResourceSystem : ISystem
             //Loaded Handle Update
             if (_loadedAssets.ContainsKey($"{type.ToString()}/{location}") == false)
             {
-                _loadedAssets.Add($"{type.ToString()}/{location}", resourceHandle);
+                ManageHandle manageHandle = new ManageHandle(isMapDependency, resourceHandle);
+                _loadedAssets.Add($"{type.ToString()}/{location}", manageHandle);
             }
             
             if (resourceHandle.IsValid())
@@ -134,7 +181,7 @@ public class ResourceSystem : ISystem
         }    
     }
 
-    public async UniTask<SceneInstance> LoadSceneResource(eResourceType type, string location)
+    public async UniTask<SceneInstance> LoadSceneResource(eResourceType type, string location, bool isMapDependency = false)
     {
         var loadedResourceResult = IsLoadedHandle(type, location);
         if (loadedResourceResult.Item1)
@@ -151,7 +198,8 @@ public class ResourceSystem : ISystem
             //Loaded Handle Update
             if (_loadedAssets.ContainsKey($"{type.ToString()}/{location}") == false)
             {
-                _loadedAssets.Add($"{type.ToString()}/{location}", resourceHandle);
+                ManageHandle manageHandle = new ManageHandle(isMapDependency, resourceHandle);
+                _loadedAssets.Add($"{type.ToString()}/{location}", manageHandle);
             }
             
             if (resourceHandle.IsValid())
@@ -180,7 +228,7 @@ public class ResourceSystem : ISystem
         return Instantiate(resultObject, parent);
     }
 
-    public async UniTask LoadHandle(eResourceType type, string location)
+    public async UniTask LoadHandle(eResourceType type, string location, bool isMapDependency = false)
     {
         var loadedResourceResult = IsLoadedHandle(type, location);
         if (loadedResourceResult.Item1)
@@ -196,7 +244,8 @@ public class ResourceSystem : ISystem
             //Loaded Handle Update
             if (_loadedAssets.ContainsKey($"{type.ToString()}/{location}") == false)
             {
-                _loadedAssets.Add($"{type.ToString()}/{location}", resourceHandle);
+                ManageHandle manageHandle = new ManageHandle(isMapDependency, resourceHandle);
+                _loadedAssets.Add($"{type.ToString()}/{location}", manageHandle);
             }
             
             if (resourceHandle.IsValid())
@@ -228,15 +277,15 @@ public class ResourceSystem : ISystem
     {
         string handleLocation = $"{type.ToString()}/{type.ToString()}{location}";
         
-        if (_loadedAssets.TryGetValue(handleLocation, out var handle))
+        if (_loadedAssets.TryGetValue(handleLocation, out var manageHandle))
         {
-            if (handle.IsValid() && handle.Status == AsyncOperationStatus.Succeeded)
+            if (manageHandle.Handle.IsValid() && manageHandle.Handle.Status == AsyncOperationStatus.Succeeded)
             {
-                return (true, handle);
+                return (true, manageHandle.Handle);
             }
             else
             {
-                return (false, handle);
+                return (false, manageHandle.Handle);
             }
         }
         else

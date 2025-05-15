@@ -18,6 +18,7 @@ public class UISystem : ISystem
     private GameObject _uiRoot;
 
     private List<UIUnit> _uiList = new List<UIUnit>();
+    private List<UIUnit> _mapDepencencyUIList = new List<UIUnit>();
     
     public override async UniTask<bool> Initialize()
     {
@@ -38,7 +39,17 @@ public class UISystem : ISystem
         }
     }
 
-    public async UniTask<UIUnit> LoadUI(eUIType uiType, bool isAutoRelease = true, bool isMultiple = false)
+    public override void ReleaseMapDependency()
+    {
+        foreach (var uiUnit in _mapDepencencyUIList)
+        {
+            uiUnit.Release();
+        }
+
+        _mapDepencencyUIList.Clear();
+    }
+
+    public async UniTask<UIUnit> LoadUI(eUIType uiType, bool isMapDependency = false, bool isMultiple = false)
     {
         if (isMultiple == false)
         {
@@ -55,7 +66,16 @@ public class UISystem : ISystem
         if (uiUnit != null)
         {
             await uiUnit.Initialize();
-            _uiList.Add(uiUnit);
+            
+            if(isMapDependency)
+            {
+                _mapDepencencyUIList.Add(uiUnit);
+            }
+            else
+            {
+                _uiList.Add(uiUnit);
+            }
+            
         }
         else
         {
@@ -67,13 +87,26 @@ public class UISystem : ISystem
 
     public UIUnit GetUI(eUIType uiType)
     {
-        foreach (var uiUnit in _uiList)
+        UIUnit uiUnit = null;
+        foreach (var ui in _uiList)
         {
-            if (uiUnit.UIType == uiType)
-                return uiUnit;
+            if (ui.UIType == uiType)
+            {
+                uiUnit = ui;
+                break;
+            }
         }
 
-        return null;
+        foreach (var ui in _mapDepencencyUIList)
+        {
+            if (ui.UIType == uiType)
+            {
+                uiUnit = ui;
+                break;
+            }
+        }
+        
+        return uiUnit;
     }
     
     public void DeleteUI(eUIType uiType)
@@ -86,7 +119,16 @@ public class UISystem : ISystem
             uiUnit.Release();
         }
         
+        foreach (var uiUnit in _mapDepencencyUIList)
+        {
+            if(uiUnit.UIType != uiType)
+                continue;
+            
+            uiUnit.Release();
+        }
+        
         _uiList.RemoveAll(x=>x.UIType == uiType);
+        _mapDepencencyUIList.RemoveAll(x=>x.UIType == uiType);
     }
 
     private void SetCanvas()

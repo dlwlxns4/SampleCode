@@ -79,6 +79,14 @@ public class Framework : Singleton<Framework>
         }
     }
 
+    public void ReleaseMapDependency()
+    {
+        foreach (var system in _systems)
+        {
+            system.ReleaseMapDependency();
+        }
+    }
+
     private void OnDestroy()
     {
         ReleaseAll();

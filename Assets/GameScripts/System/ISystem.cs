@@ -19,4 +19,9 @@ public class ISystem : MonoBehaviour
     {
         
     }
+
+    public virtual void ReleaseMapDependency()
+    {
+        
+    }
 }
