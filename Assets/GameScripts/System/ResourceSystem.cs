@@ -62,6 +62,9 @@ public class ResourceSystem : ISystem
         {
             if(manageHandle.Value == null)
                 continue;
+
+            if (manageHandle.Value.operationHandle.IsValid() == false)
+                continue;
             
             Addressables.Release(manageHandle.Value.operationHandle);
         }

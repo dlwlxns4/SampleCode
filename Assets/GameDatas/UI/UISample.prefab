@@ -390,6 +390,8 @@ GameObject:
   - component: {fileID: 4147739542050185370}
   - component: {fileID: 4999275875151094868}
   - component: {fileID: 1631612561375774812}
+  - component: {fileID: 4282377769201435900}
+  - component: {fileID: 674183185769622952}
   m_Layer: 0
   m_Name: UISample
   m_TagString: Untagged
@@ -412,7 +414,7 @@ RectTransform:
   - {fileID: 5489372235068433373}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.75, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
@@ -468,10 +470,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UIType: 0
-  ButtonTestUI: {fileID: 0}
-  ButtonDeleteTestUI: {fileID: 0}
-  ButtonMapChange: {fileID: 0}
-  ButtonExitGame: {fileID: 0}
+  ButtonTestUI: {fileID: 3716211117210059453}
+  ButtonDeleteTestUI: {fileID: 9050829096823134887}
+  ButtonMapChange: {fileID: 5761842648382416617}
+  ButtonExitGame: {fileID: 9109078248663250704}
+--- !u!223 &4282377769201435900
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2634312980176989380}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
+--- !u!114 &674183185769622952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2634312980176989380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &4028360651928905987
 GameObject:
   m_ObjectHideFlags: 0

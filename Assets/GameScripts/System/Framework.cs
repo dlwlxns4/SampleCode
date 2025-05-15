@@ -59,6 +59,17 @@ public class Framework : Singleton<Framework>
             }
         }
     }
+
+    public void GameExit()
+    {
+        ReleaseAll();
+        
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
     
     public void ReleaseAll()
     {

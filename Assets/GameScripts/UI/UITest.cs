@@ -9,4 +9,10 @@ public class UITest : UIUnit
     {
         return UniTask.CompletedTask;
     }
+
+    public override void Release()
+    {
+        Destroy(gameObject);
+        base.Release();
+    }
 }

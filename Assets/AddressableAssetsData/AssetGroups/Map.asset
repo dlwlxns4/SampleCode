@@ -16,7 +16,7 @@ MonoBehaviour:
   m_GUID: 40c60fc9823ec8d4090dc32046253778
   m_SerializeEntries:
   - m_GUID: 33a5fa203b5af7a48a300f12cdfa665a
-    m_Address: Assets/GameDatas/Scene/MapSampleScene.unity
+    m_Address: Assets/GameDatas/Map/MapSample.unity
     m_ReadOnly: 0
     m_SerializedLabels:
     - Map

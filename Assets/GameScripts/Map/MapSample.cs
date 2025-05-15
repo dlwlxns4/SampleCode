@@ -5,6 +5,6 @@ public class MapSample : MapUnit
 {
     public override async UniTask Initialize()
     {
-        await Framework.I.UI.LoadUI(eUIType.Sample);
+        await Framework.I.UI.LoadUI(eUIType.Sample, false);
     }
 }

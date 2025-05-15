@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3023204952198602923}
   - component: {fileID: 4147739542050185370}
   - component: {fileID: 4999275875151094868}
-  - component: {fileID: 1631612561375774812}
+  - component: {fileID: 20441113718832327}
   m_Layer: 0
   m_Name: UITest
   m_TagString: Untagged
@@ -34,7 +34,7 @@ RectTransform:
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0.55, y: 0.3}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -76,7 +76,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1631612561375774812
+--- !u!114 &20441113718832327
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,8 +85,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2634312980176989380}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4198e261551571c4abfa99f8e2c031ab, type: 3}
+  m_Script: {fileID: 11500000, guid: bd3200d03b970b7428f1d1af6a625993, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UIType: 0
-  a: 0
+  UIType: 1
