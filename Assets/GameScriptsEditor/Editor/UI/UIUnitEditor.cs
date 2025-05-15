@@ -10,14 +10,16 @@ public class UIUnitEditor : Editor
     public override void OnInspectorGUI()
     {
         UIUnit uiUnit = (UIUnit)target;
-        DrawDefaultInspector();
         
         if (GUILayout.Button("Setting UI Type"))
         {
             SetUIType(uiUnit);
         }
+
+        GUILayout.Space(10f);
+        base.OnInspectorGUI();
         
-        GUILayout.Space(10);
+        GUILayout.Space(10f);
     }
     
     private void SetUIType(UIUnit uiUnit)

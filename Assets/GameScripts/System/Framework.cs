@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 
 public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
@@ -16,8 +18,8 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         if(_instance == null)
         {
             _instance = this as T;
-            Init();
             DontDestroyOnLoad(this);
+            Init();
         }
         else
         {
@@ -30,15 +32,18 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
 public class Framework : Singleton<Framework>
 {
+    public SystemLanguage Language => _language;
     public UISystem UI => _uiSystem;
     public ResourceSystem Resource => _resourceSystem;
     public MapSystem Map => _mapSystem;
+    
     
     private UISystem _uiSystem;
     private ResourceSystem _resourceSystem;
     private MapSystem _mapSystem;
     
     private List<ISystem> _systems = new List<ISystem>();
+    private SystemLanguage _language = SystemLanguage.Korean;
     
     public override async UniTask Init()
     {
@@ -49,7 +54,7 @@ public class Framework : Singleton<Framework>
         _systems.Add(_resourceSystem);
         _systems.Add(_uiSystem);
         _systems.Add(_mapSystem);
-        
+
         foreach (var system in _systems)
         {
             if (await system.Initialize() == false)
@@ -87,8 +92,30 @@ public class Framework : Singleton<Framework>
         }
     }
 
-    private void OnDestroy()
+    private string ConvertSystemLanguageToLocaleCode(SystemLanguage language)
     {
-        ReleaseAll();
+        switch (language)
+        {
+            case SystemLanguage.Korean: return "ko-KR";
+            case SystemLanguage.English: return "en";
+            case SystemLanguage.Japanese: return "ja";
+            case SystemLanguage.ChineseSimplified: return "zh";
+            default: return "en";
+        }
+    }
+    
+    public void SetLanguage(SystemLanguage language)
+    {
+        string localeCode = ConvertSystemLanguageToLocaleCode(language);
+        Locale newLocale = LocalizationSettings.AvailableLocales.GetLocale(new LocaleIdentifier(localeCode));
+        if (newLocale != null)
+        {
+            LocalizationSettings.SelectedLocale = newLocale;
+            Debug.Log($"Changed to locale: {localeCode}");
+        }
+        else
+        {
+            Debug.LogWarning($"Locale not found for code: {localeCode}");
+        }
     }
 }

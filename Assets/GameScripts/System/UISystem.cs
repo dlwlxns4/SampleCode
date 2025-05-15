@@ -56,6 +56,7 @@ public class UISystem : ISystem
             var ui = GetUI(uiType);
             if (ui != null)
             {
+                Debug.Log($"UISystem LoadUI type : {uiType} is Already Exist.");
                 return ui;
             }
         }
@@ -75,7 +76,6 @@ public class UISystem : ISystem
             {
                 _uiList.Add(uiUnit);
             }
-            
         }
         else
         {

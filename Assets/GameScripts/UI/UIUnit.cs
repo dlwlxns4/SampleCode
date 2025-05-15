@@ -14,6 +14,9 @@ public class UIUnit : MonoBehaviour
 
     public virtual void Release()
     {
+        if (gameObject == null)
+            return;
         
+        Destroy(gameObject);
     }
 }

@@ -24,6 +24,8 @@ public class UISample : UIUnit
         ButtonDeleteTestUI.onClick.RemoveAllListeners();
         ButtonMapChange.onClick.RemoveAllListeners();
         ButtonExitGame.onClick.RemoveAllListeners();
+        
+        base.Release();
     }
 
     #region Delegate
