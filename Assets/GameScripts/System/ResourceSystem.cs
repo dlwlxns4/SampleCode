@@ -16,27 +16,10 @@ public enum eResourceType
     None,
 }
 
-public class ManageHandle
-{
-    //장소 전환 시 AutoRelease
-    public bool AutoRelease = true;
-    public AsyncOperationHandle operationHandle ;
-
-    public ManageHandle(bool autoRelase, AsyncOperationHandle handle)
-    {
-        operationHandle = handle;
-    }
-
-    public void Release()
-    {
-        Addressables.Release(operationHandle);
-    }
-}
-
 public class ResourceSystem : ISystem
 {
     private Dictionary<eResourceType, Dictionary<string, IResourceLocation>> _resourceLocations = new Dictionary<eResourceType, Dictionary<string, IResourceLocation>>();
-    private Dictionary<string, ManageHandle> _loadedAssets = new Dictionary<string, ManageHandle>();
+    private Dictionary<string, AsyncOperationHandle> _loadedAssets = new Dictionary<string, AsyncOperationHandle>();
     
     public override async UniTask<bool> Initialize()
     {
@@ -58,32 +41,14 @@ public class ResourceSystem : ISystem
     public override void Release()
     {
         _resourceLocations.Clear();
-        foreach (var manageHandle in _loadedAssets)
+        foreach (var handle in _loadedAssets)
         {
-            if(manageHandle.Value == null)
-                continue;
-
-            if (manageHandle.Value.operationHandle.IsValid() == false)
+            if (handle.Value.IsValid() == false)
                 continue;
             
-            Addressables.Release(manageHandle.Value.operationHandle);
+            Addressables.Release(handle.Value);
         }
         _loadedAssets.Clear();
-    }
-
-    //장소 변경 시 호출
-    public void ReleaseAutoHandle()
-    {
-        foreach (var manageHandle in _loadedAssets)
-        {
-            if(manageHandle.Value == null)
-                continue;
-            
-            if(manageHandle.Value.AutoRelease == false)
-                continue;
-            
-            Addressables.Release(manageHandle.Value.operationHandle);
-        }
     }
     
     private async UniTask LoadLocation()
@@ -137,7 +102,7 @@ public class ResourceSystem : ISystem
     /// <summary>
     /// Object 타입만 변환 가능. 
     /// </summary>
-    public async UniTask<T> LoadResource<T>(eResourceType type, string location, bool isAutoRelease = true)
+    public async UniTask<T> LoadResource<T>(eResourceType type, string location)
     {
         var loadedResourceResult = IsLoadedHandle(type, location);
         if (loadedResourceResult.Item1)
@@ -153,8 +118,7 @@ public class ResourceSystem : ISystem
             //Loaded Handle Update
             if (_loadedAssets.ContainsKey($"{type.ToString()}/{location}") == false)
             {
-                var manageHandle = new ManageHandle(isAutoRelease, resourceHandle);
-                _loadedAssets.Add($"{type.ToString()}/{location}", manageHandle);
+                _loadedAssets.Add($"{type.ToString()}/{location}", resourceHandle);
             }
             
             if (resourceHandle.IsValid())
@@ -170,7 +134,7 @@ public class ResourceSystem : ISystem
         }    
     }
 
-    public async UniTask<SceneInstance> LoadSceneResource(eResourceType type, string location, bool isAutoRelease = true)
+    public async UniTask<SceneInstance> LoadSceneResource(eResourceType type, string location)
     {
         var loadedResourceResult = IsLoadedHandle(type, location);
         if (loadedResourceResult.Item1)
@@ -187,8 +151,7 @@ public class ResourceSystem : ISystem
             //Loaded Handle Update
             if (_loadedAssets.ContainsKey($"{type.ToString()}/{location}") == false)
             {
-                var manageHandle = new ManageHandle(isAutoRelease, resourceHandle);
-                _loadedAssets.Add($"{type.ToString()}/{location}", manageHandle);
+                _loadedAssets.Add($"{type.ToString()}/{location}", resourceHandle);
             }
             
             if (resourceHandle.IsValid())
@@ -204,9 +167,9 @@ public class ResourceSystem : ISystem
         }    
     }
     
-    public async UniTask<GameObject> InstantiateResourceAsync(eResourceType type, string location, Transform parent = null, bool isAutoRelease = true)
+    public async UniTask<GameObject> InstantiateResourceAsync(eResourceType type, string location, Transform parent = null)
     {
-        var resultObject = await LoadResource<GameObject>(type, location, isAutoRelease);
+        var resultObject = await LoadResource<GameObject>(type, location);
         
         if (resultObject == null)
         {
@@ -217,7 +180,7 @@ public class ResourceSystem : ISystem
         return Instantiate(resultObject, parent);
     }
 
-    public async UniTask LoadHandle(eResourceType type, string location, bool isAutoRelease = true)
+    public async UniTask LoadHandle(eResourceType type, string location)
     {
         var loadedResourceResult = IsLoadedHandle(type, location);
         if (loadedResourceResult.Item1)
@@ -233,8 +196,7 @@ public class ResourceSystem : ISystem
             //Loaded Handle Update
             if (_loadedAssets.ContainsKey($"{type.ToString()}/{location}") == false)
             {
-                var manageHandle = new ManageHandle(isAutoRelease, resourceHandle);
-                _loadedAssets.Add($"{type.ToString()}/{location}", manageHandle);
+                _loadedAssets.Add($"{type.ToString()}/{location}", resourceHandle);
             }
             
             if (resourceHandle.IsValid())
@@ -266,15 +228,15 @@ public class ResourceSystem : ISystem
     {
         string handleLocation = $"{type.ToString()}/{type.ToString()}{location}";
         
-        if (_loadedAssets.TryGetValue(handleLocation, out var managedHandle))
+        if (_loadedAssets.TryGetValue(handleLocation, out var handle))
         {
-            if (managedHandle.operationHandle.IsValid() && managedHandle.operationHandle.Status == AsyncOperationStatus.Succeeded)
+            if (handle.IsValid() && handle.Status == AsyncOperationStatus.Succeeded)
             {
-                return (true, managedHandle.operationHandle);
+                return (true, handle);
             }
             else
             {
-                return (false, managedHandle.operationHandle);
+                return (false, handle);
             }
         }
         else

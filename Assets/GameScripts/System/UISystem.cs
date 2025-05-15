@@ -30,6 +30,14 @@ public class UISystem : ISystem
         return _isInit;
     }
 
+    public override void Release()
+    {
+        foreach (var uiUnit in _uiList)
+        {
+            uiUnit.Release();
+        }
+    }
+
     public async UniTask<UIUnit> LoadUI(eUIType uiType, bool isAutoRelease = true, bool isMultiple = false)
     {
         if (isMultiple == false)
@@ -41,7 +49,7 @@ public class UISystem : ISystem
             }
         }
         
-        var uiObject = await Framework.I.Resource.InstantiateResourceAsync(eResourceType.UI, uiType.ToString(), _uiRoot.transform, isAutoRelease);
+        var uiObject = await Framework.I.Resource.InstantiateResourceAsync(eResourceType.UI, uiType.ToString(), _uiRoot.transform);
         
         var uiUnit = uiObject.GetComponent<UIUnit>();
         if (uiUnit != null)
