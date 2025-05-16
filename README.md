@@ -7,8 +7,6 @@ Basic Framework.
 
 Framework Scene에서 실행.
 
-![image](https://github.com/user-attachments/assets/2b1156c4-f9ba-4420-a61b-87f570af1722)
-
 기본 기능
 1. 왼쪽 패널 UI Load
 2. 왼쪽 패널 UI Delete
@@ -16,6 +14,12 @@ Framework Scene에서 실행.
 4. Localization (KR, JP, EN)
 5. 캐릭터소환 ( 소환 시 패널 등장 )
 6. Spine Animation
+
+![image](https://github.com/user-attachments/assets/2b1156c4-f9ba-4420-a61b-87f570af1722)
+
+
+
+
 
 
 
