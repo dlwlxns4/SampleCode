@@ -37,11 +37,13 @@ public class Framework : Singleton<Framework>
     public ResourceSystem Resource => _resourceSystem;
     public MapSystem Map => _mapSystem;
     public CharacterSystem Character => _characterSystem;
+    public TableSystem Table => _tableSystem;
     
     private UISystem _uiSystem;
     private ResourceSystem _resourceSystem;
     private MapSystem _mapSystem;
     private CharacterSystem _characterSystem;
+    private TableSystem _tableSystem;
     
     private List<ISystem> _systems = new List<ISystem>();
     private SystemLanguage _language = SystemLanguage.Korean;
@@ -52,11 +54,13 @@ public class Framework : Singleton<Framework>
         _uiSystem = this.AddComponent<UISystem>();
         _mapSystem = this.AddComponent<MapSystem>();
         _characterSystem = this.AddComponent<CharacterSystem>();
+        _tableSystem = this.AddComponent<TableSystem>();
         
         _systems.Add(_resourceSystem);
         _systems.Add(_uiSystem);
         _systems.Add(_mapSystem);
         _systems.Add(_characterSystem);
+        _systems.Add(_tableSystem);
 
         foreach (var system in _systems)
         {
@@ -109,6 +113,7 @@ public class Framework : Singleton<Framework>
     
     public void SetLanguage(SystemLanguage language)
     {
+        _language = language;
         string localeCode = ConvertSystemLanguageToLocaleCode(language);
         Locale newLocale = LocalizationSettings.AvailableLocales.GetLocale(new LocaleIdentifier(localeCode));
         if (newLocale != null)

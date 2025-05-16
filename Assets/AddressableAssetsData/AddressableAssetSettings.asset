@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 07e817a40bf7b49458e19fbc2a7afc2a
   m_currentHash:
     serializedVersion: 2
-    Hash: 214cd8581846e53be4bb5e2d2a3fef7d
+    Hash: 00000000000000000000000000000000
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_CatalogRequestsTimeout: 0
@@ -64,6 +64,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 106faeeb7b3345f44950a3afeacb4b25, type: 2}
   - {fileID: 11400000, guid: b24f28dc0dd419940adde111d7ec6536, type: 2}
   - {fileID: 11400000, guid: a5c78b49c20a5684f97e8790150c9fa0, type: 2}
+  - {fileID: 11400000, guid: 8954a9b19b68a5a42a4aee2ca797904f, type: 2}
   - {fileID: 11400000, guid: f41d417e31584ea40b167171f4eacde5, type: 2}
   - {fileID: 11400000, guid: bdf45aad02c8b42409cd6706ac60cfa5, type: 2}
   - {fileID: 11400000, guid: bff1c7915d54c1b42b0e87568f6cb85c, type: 2}
@@ -115,6 +116,7 @@ MonoBehaviour:
     - Locale-ko-KR
     - Preload
     - Character
+    - Table
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: f848fb1e08420ab41889621e1ef7b66f, type: 2}

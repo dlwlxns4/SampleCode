@@ -4,11 +4,13 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using OfficeOpenXml;
 using Newtonsoft.Json;
 using UnityEditor.Localization;
 using UnityEditor.Localization.Plugins.CSV;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 
 public class ExcelClassExporter : EditorWindow
 {
@@ -16,8 +18,8 @@ public class ExcelClassExporter : EditorWindow
     private string _outputFolderPath = "Assets/GameScripts/Table"; 
     private string _outputDataPath = "Assets/GameDatas/Table"; 
 
-    private List<string> _excelFiles = new();
-    private Dictionary<string, bool> _selectionMap = new();
+    private List<string> _excelFiles = new List<string>();
+    private Dictionary<string, bool> _selectionMap = new Dictionary<string, bool>();
     private Vector2 _scroll;
 
     [MenuItem("Tools/Excel to C# Class Exporter")]
@@ -39,12 +41,20 @@ public class ExcelClassExporter : EditorWindow
             return;
         }
 
-        var files = Directory.GetFiles(_excelFolderPath, "*.xlsx", SearchOption.AllDirectories);
+        var files = Directory.GetFiles(_excelFolderPath, "*.xlsx", SearchOption.AllDirectories).ToList();
         foreach (var file in files)
         {
             string name = Path.GetFileNameWithoutExtension(file);
             _excelFiles.Add(name);
             _selectionMap[name] = false;
+        }
+
+        var index = _excelFiles.FindIndex(x => x.Contains("Message"));
+        if (index > 0)
+        {
+            var table = _excelFiles[index];
+            _excelFiles.RemoveAt(index);
+            _excelFiles.Insert(0, table);
         }
     }
 
@@ -56,8 +66,31 @@ public class ExcelClassExporter : EditorWindow
             ScanExcelFiles();
 
         _scroll = EditorGUILayout.BeginScrollView(_scroll);
+
+        bool isShowDataLabel = false;
         foreach (var file in _excelFiles)
+        {
+            if (_selectionMap == null || _selectionMap.Count == 0)
+            {
+                ScanExcelFiles();
+                break;
+            }
+            
+            if (file.Contains("Message"))
+            {
+                
+                GUILayout.Label("    Localization Message Table.");
+                _selectionMap[file] = EditorGUILayout.ToggleLeft(file, _selectionMap[file]);
+                GUILayout.Label("\n");
+                continue;
+            }
+            else if(isShowDataLabel == false)
+            {
+                GUILayout.Label("    Data Table.");
+            }
+            
             _selectionMap[file] = EditorGUILayout.ToggleLeft(file, _selectionMap[file]);
+        }
         EditorGUILayout.EndScrollView();
 
         _outputFolderPath = EditorGUILayout.TextField("OutputPath", _outputFolderPath);
@@ -130,6 +163,7 @@ public class ExcelClassExporter : EditorWindow
                 sb.AppendLine("    public override void Deserialize(string json)");
                 sb.AppendLine("    {");
                 sb.AppendLine($"        var result = JsonConvert.DeserializeObject<{containerType}<{className}>>(json);");
+                sb.AppendLine($"        _container = result;");
                 sb.AppendLine("    }");
                 sb.AppendLine("}");
 
@@ -192,19 +226,22 @@ public class ExcelClassExporter : EditorWindow
 
                 if (shouldExportCsv)
                 {
-                    var csvPath = Path.Combine(_outputDataPath, $"Table_{sheet.Name}Data.csv");
+                    var csvPath = Path.Combine(_outputDataPath, $"Table{sheet.Name}Data.csv");
                     File.WriteAllText(csvPath, csvSb.ToString(), new UTF8Encoding(true));
                     Debug.Log($"[CSV Export] {csvPath}");
                     ImportCsvToLocalization(csvPath);
                 }
                 else
                 {
-                    File.WriteAllText(Path.Combine(_outputDataPath, $"Table_{sheet.Name}Data.json"), jsonClient);
+                    File.WriteAllText(Path.Combine(_outputDataPath, $"Table{sheet.Name}Data.json"), jsonClient);
                 }
 
-                Debug.Log($"{sheet.Name}_Client.json, {sheet.Name}_Server.json Create Complete");
+                Debug.Log($"{sheet.Name}Client.json, {sheet.Name}_Server.json Create Complete");
             }
         }
+        
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
     
     public void ImportCsvToLocalization(string csvPath)

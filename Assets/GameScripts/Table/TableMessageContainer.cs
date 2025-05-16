@@ -10,5 +10,6 @@ public class TableMessageContainer : TableListContainer<MessageData>
     public override void Deserialize(string json)
     {
         var result = JsonConvert.DeserializeObject<List<MessageData>>(json);
+        _container = result;
     }
 }

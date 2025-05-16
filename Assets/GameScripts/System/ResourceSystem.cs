@@ -14,6 +14,7 @@ public enum eResourceType
     UI,
     Map,
     Character,
+    Table,
     None,
 }
 

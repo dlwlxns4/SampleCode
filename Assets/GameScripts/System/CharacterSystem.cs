@@ -6,7 +6,7 @@ using UnityEngine;
 
 public enum eCharacterType
 {
-    Nemu,
+    Nemu = 1,
 }
 
 public class CharacterSystem : ISystem

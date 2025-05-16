@@ -16,11 +16,13 @@ public class UITest : UIUnit
     public Button ButtonDefaultAttack;
 
     public GameObject GOAnimationPanel;
+    public GameObject GOCharacterPanel;
     
     public RawImage RawImageCharacter;
     public Camera CameraCharacter;
     
     public TextMeshProUGUI TMPLocalize;
+    public TextMeshProUGUI TMPCharacterData;
     
     private List<SystemLanguage> _languages = new List<SystemLanguage>() { SystemLanguage.Korean, SystemLanguage.Japanese, SystemLanguage.English };
     
@@ -35,6 +37,7 @@ public class UITest : UIUnit
         _currentLanguage = Framework.I.Language;
         int foundIndex = _languages.IndexOf(_currentLanguage);
         _currentLanguageIndex = foundIndex >= 0 ? foundIndex : 0;
+        TMPLocalize.SetText(_currentLanguage.ToString());
 
         // RenderTexture 생성
         Vector2 size = RawImageCharacter.rectTransform.rect.size;
@@ -92,6 +95,27 @@ public class UITest : UIUnit
             CameraCharacter.transform.LookAt(controller.transform.position); // 시선도 위쪽 보정
             
             GOAnimationPanel.SetActive(true);
+            GOCharacterPanel.SetActive(true);
+
+            var table = Framework.I.Table.GetTableContainer(eTableType.CharacterData) as TableCharacterContainer;
+            if (table != null)
+            {
+                var data = table.GetData((int)eCharacterType.Nemu);
+                if (data != null)
+                {
+                    TMPCharacterData.SetText($"CharacterType : {eCharacterType.Nemu}\n" +
+                                             $"HP : {data.HP}\n" +
+                                             $"SP : {data.SP}\n" +
+                                             $"Attack : {data.ATTACK}\n" +
+                                             $"Defense : {data.DEFENSE}");
+                }
+                else
+                {
+                    TMPCharacterData.SetText($"CharacterType : {eCharacterType.Nemu}\n" +
+                                             $"Data Not Found.");
+                    Debug.LogError($"CharacterType : {eCharacterType.Nemu} Data Not Found.");
+                }
+            }
         }
         
         CameraCharacter.targetTexture = _renderTexture;
