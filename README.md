@@ -16,5 +16,5 @@ Basic Framework.
 
 4. 캐릭터 MVC 적용.
 => ![image](https://github.com/user-attachments/assets/c220f278-1549-4606-80d5-2f1c7e7f308b)
-
+5. UI Load, Character Load 등 어디에서 사용이 가능하도록 기능 분리 위주 구현.
 
