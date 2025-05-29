@@ -18,11 +18,12 @@ Framework Scene에서 실행.
 ![image](https://github.com/user-attachments/assets/2b1156c4-f9ba-4420-a61b-87f570af1722)
 
 
-
+구조 UML
+![image](https://github.com/user-attachments/assets/d5f248fa-ec0f-4e11-990f-d636b1ef3738)
 
 
 기능 및 툴
-1. Addressable System을 통한 씬 전환 시 해당 씬에서 사용한 메모리 해제.
+1. Addressable을 통한 리소스 관리
 2. Excel Export 툴을 통한 테이블 데이터 자동화.
    => 엑셀 테이블에서 CSV추출 후 Localization Table 자동화
    => 다른 엑셀테이블 추출 시 Json파일 및 Class 생성
