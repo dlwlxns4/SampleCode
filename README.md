@@ -5,7 +5,14 @@ Sample Code For Unity
 05.13 ~ 05.16
 
 ##**개요 :**
-코드 스타일 표현을 위한 Basic Framework.
+Unity 개발 역량과 코딩 스타일 표현을 위한 기본 프레임워크 구현
+
+##**환경 및 핵심 기술**##
+Unity: 6000.0.41f1
+언어: C# (비동기 프로그래밍)
+Addressable Asset System
+Unity Localization Package
+비동기 처리 (UniTask)
 
 
 ##**실행방법**
@@ -28,7 +35,8 @@ Framework Scene에서 실행.
 
 ##**기능 및 툴**
 1. Addressable을 통한 리소스 관리
-2. Excel Export 툴을 통한 테이블 데이터 자동화.
+2. 다국어 지원
+3. Excel Export 툴을 통한 테이블 데이터 자동화.
    => 엑셀 테이블에서 CSV추출 후 Localization Table 자동화
    => 다른 엑셀테이블 추출 시 Json파일 및 Class 생성
    => _container를 통한 데이터 관리
@@ -36,6 +44,7 @@ Framework Scene에서 실행.
 
    ( Tools/Export to C# Class Exporter )
 
-3. 캐릭터 MVC 적용
+4. 캐릭터 MVC 적용
+   => 확장 가능 캐릭터 타입 구조
 => ![image](https://github.com/user-attachments/assets/c220f278-1549-4606-80d5-2f1c7e7f308b)
 
